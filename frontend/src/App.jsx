@@ -18,12 +18,18 @@ function monthLabel(key) {
 
 // ─── API helpers ─────────────────────────────────────────────────────────────
 async function api(path, method = "GET", body, token) {
-  const res = await fetch(API + path, {
-    method,
-    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  return res.json();
+  try {
+    const res = await fetch(API + path, {
+      method,
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { error: data.error || `Server HTTP ${res.status}: Is the backend running?` };
+    return data;
+  } catch (err) {
+    return { error: "Network error! Did you set VITE_API_URL correctly? Or wait 50s for Render to wake up." };
+  }
 }
 
 // ─── PieChart component ───────────────────────────────────────────────────────
@@ -48,11 +54,15 @@ function AuthScreen({ onLogin }) {
   const [tab, setTab] = useState("login");
   const [form, setForm] = useState({ username: "", password: "" });
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function submit() {
     if (!form.username || !form.password) return setErr("Please fill all fields.");
+    setLoading(true);
+    setErr("");
     const res = await api(`/${tab}`, "POST", form);
+    setLoading(false);
     if (res.error) return setErr(res.error);
     onLogin(res.token, res.username, res.isAdmin);
   }
@@ -72,7 +82,9 @@ function AuthScreen({ onLogin }) {
         {err && <p className="err">{err}</p>}
         <div className="field"><label>Username</label><input value={form.username} onChange={set("username")} placeholder="yourname" /></div>
         <div className="field"><label>Password</label><input type="password" value={form.password} onChange={set("password")} placeholder="••••••" onKeyDown={e => e.key==="Enter" && submit()} /></div>
-        <button className="btn-primary" onClick={submit}>{tab === "login" ? "Sign in" : "Create account"}</button>
+        <button className="btn-primary" onClick={submit} disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+          {loading ? "Connecting... (May take 50s)" : (tab === "login" ? "Sign in" : "Create account")}
+        </button>
       </div>
     </div>
   );
