@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from "chart.js";
 Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = "https://expenses-app-ow8p.onrender.com/api";
 const CATEGORIES = ["Food","Transport","Shopping","Health","Entertainment","Utilities","Education","Other"];
 const CAT_COLORS  = ["#1D9E75","#378ADD","#D4537E","#E24B4A","#BA7517","#7F77DD","#639922","#888780"];
 
