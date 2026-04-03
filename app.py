@@ -25,6 +25,12 @@ def save_db(db):
         json.dump(db, f, indent=2)
 
 
+# ─── Base Route ─────────────────────────────────────────────────────────────
+
+@app.route("/", methods=["GET"])
+def home():
+    return "<h1>SpendWise Backend API is running successfully!</h1><p>The frontend can now communicate with this server.</p>"
+
 # ─── Auth ───────────────────────────────────────────────────────────────────
 
 @app.route("/api/register", methods=["POST"])
