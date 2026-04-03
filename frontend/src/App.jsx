@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from "chart.js";
-import './App.css';
 Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
